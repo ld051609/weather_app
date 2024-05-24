@@ -9,7 +9,7 @@ const ClosetScreen = ({imgIcon}) => {
       setClothes(['t-shirt.png', 'shorts.png', 'sunglasses.png'])
     }
     else if (imgIcon == '02d.png' || imgIcon == '02n.png') {
-      setClothes(['t-shirt.png', 'sweater,png', 'pants.png'])
+      setClothes(['t-shirt.png', 'sweater.png', 'pants.png'])
     }
     else if (imgIcon == '03d.png' || imgIcon == '03n.png') {
       setClothes(['t-shirt.png', 'jacket.png', 'jeans.png'])
@@ -18,13 +18,13 @@ const ClosetScreen = ({imgIcon}) => {
       setClothes(['t-shirt.png', 'hoodie.png', 'pants.png'])
     }
     else if (imgIcon == '09d.png' || imgIcon == '09n.png') {
-      setClothes(['rain-jacket.png', 'poncho.png', 'waterproof-shoes.png'])
+      setClothes(['raincoat.png', 'poncho.png', 'boot.png'])
     }
     else if (imgIcon == '10d.png' || imgIcon == '10n.png') {
-      setClothes(['raincoat.png', 'waterproof-shoes.png', 'pants.png'])
+      setClothes(['raincoat.png', 'boot.png', 'pants.png'])
     }
     else if (imgIcon == '11d.png' || imgIcon == '11n.png') {
-      setClothes(['rain-jacket-hood.png', 'waterproof-shoes.png', 'pants.png'])
+      setClothes(['raincoat.png', 'boot.png', 'pants.png'])
     }
     else if (imgIcon == '13d.png' || imgIcon == '13n.png') {
       setClothes(['coat.png', 'scarf.png', 'gloves.png'])
@@ -46,7 +46,7 @@ const ClosetScreen = ({imgIcon}) => {
       
       <View style={styles.clothes}>
         {clothes.map((clothe, index) => {
-          return <Image key={index} source={require(`../assets/${clothe}`)}  style={styles.img}/>
+          return <Image key={index} source={require(`@expo/assets/${clothe}`)}  style={styles.img}/>
         })}
       </View>
     </SafeAreaView>

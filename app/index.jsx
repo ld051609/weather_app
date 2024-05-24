@@ -1,31 +1,25 @@
-import React, { createContext } from 'react';
+import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import {createStackNavigator} from '@react-navigation/stack'; 
+import { createStackNavigator } from '@react-navigation/stack';
 import HomeScreen from '../components/HomeScreen';
 import TipScreen from '../components/TipScreen';
-import ReportScreen from '../components/ReportScreen'; 
+import ReportScreen from '../components/ReportScreen';
 import ClosetScreen from '../components/ClosetScreen';
-const Stack = createStackNavigator();
-
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { StateProvider } from '../contexts/StateContext';  // Import the StateProvider
 
 const Tab = createBottomTabNavigator();
-const StateContext = createContext();
 
 function MyTabs() {
-  const [imgIcon, setImgIcon] = React.useState('');
   return (
-    <Tab.Navigator styles={styles.container} screenOptions={{headerShown: false}}>
-      <StateContext.Provider value={ {imgIcon, setImgIcon}}>
-        <Tab.Screen name="Home" component={HomeScreen}/>
-        <Tab.Screen name="Closet" component={ClosetScreen}/>
-      </StateContext.Provider>
-      <Tab.Screen name="Tips" component={TipScreen} />
-      <Tab.Screen name="Report" component={ReportScreen} />
-
-
-
-    </Tab.Navigator>
+    <StateProvider>  {/* Wrap the navigator in the StateProvider */}
+      <Tab.Navigator styles={styles.container} screenOptions={{ headerShown: false }}>
+        <Tab.Screen name="Home" component={HomeScreen} />
+        <Tab.Screen name="Closet" component={ClosetScreen} />
+        <Tab.Screen name="Tips" component={TipScreen} />
+        <Tab.Screen name="Report" component={ReportScreen} />
+      </Tab.Navigator>
+    </StateProvider>
   );
 }
 

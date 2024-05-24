@@ -1,16 +1,15 @@
-import { View, Text, Image, ScrollView, StyleSheet} from 'react-native'
-import React, { useEffect } from 'react'
-import { SafeAreaView } from 'react-native-safe-area-context'
-import { SearchBar } from "react-native-elements";
-
-// import {useContext, createContext} from 'react';
+import React, { useEffect, useContext } from 'react';
+import { View, Text, Image, ScrollView, StyleSheet } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { SearchBar } from 'react-native-elements';
+import { StateContext } from '../contexts/StateContext';  // Import the StateContext
 
 const HomeScreen = () => {
+  const { imgIcon, setImgIcon } = useContext(StateContext);  // Access the context
   const [searchPlace, setSearchPlace] = React.useState('');
-  // const [locationData, setLocationData] = React.useState({});
   const [weatherData, setWeatherData] = React.useState({});
   const [weatherData5, setWeatherData5] = React.useState([]);
-  // const [imgIcon, setImgIcon] = React.useContext(StateCo);
+
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
       fetchLocation(searchPlace);
@@ -19,16 +18,16 @@ const HomeScreen = () => {
     return () => clearTimeout(delayDebounceFn);
   }, [searchPlace]);
 
+
   const fetchLocation = async (cityName) => {
     try {
-      const response = await fetch(`http://api.openweathermap.org/geo/1.0/direct?q=${cityName}&limit=1&appid=be4489cf46a06b204f6270677dcf836f`);
+      const response = await fetch(`http://api.openweathermap.org/geo/1.0/direct?q=${cityName}&limit=1&appid=b140760e91b6e86d318cf1518006b467`);
       const data = await response.json();
       console.log('Location data', data);
-      // fetch data api for 1 day only
+      // Fetch data api for 1 day only
       fetchWeather(data[0]['lat'], data[0]['lon']);
-      // fetch data api for 5 days forecast
+      // Fetch data api for 5 days forecast
       fetchWeatherForecast(data[0]['lat'], data[0]['lon']);
-
     } catch (error) {
       console.log('Error fetching location data', error);
     }
@@ -36,46 +35,36 @@ const HomeScreen = () => {
 
   const fetchWeather = async (lat, lon) => {
     try {
-      const res = await fetch(`https://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lon}&appid=be4489cf46a06b204f6270677dcf836f`);
+      const res = await fetch(`https://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lon}&appid=b140760e91b6e86d318cf1518006b467`);
       const weatherData = await res.json();
       setWeatherData({
         'temperature': weatherData['current']['temp'],
         'condition': weatherData['current']['weather'][0]['description']
-      })
-      setImgIcon(`https://openweathermap.org/img/wn/${weatherData['current']['weather'][0]['icon']}@2x.png` )
-      
+      });
+      setImgIcon(`https://openweathermap.org/img/wn/${weatherData['current']['weather'][0]['icon']}@2x.png`);
     } catch (error) {
       console.log('Error fetching weather data', error);
-      
     }
-  }
+  };
 
   const fetchWeatherForecast = async (lat, lon) => {
     try {
-      
-      const res = await fetch(`api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=be4489cf46a06b204f6270677dcf836f`);
+      const res = await fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=b140760e91b6e86d318cf1518006b467`);
       const weatherData = await res.json();
-      weatherData['list'].map((data) => {
-        setWeatherData5([
-          ...weatherData5,
-          {
-            'temperature': data['main']['temp'],
-            'icon': data['weather'][0]['icon']  
-          }
-        ])
-      });
-
-
+      const forecastData = weatherData['list'].map((data) => ({
+        'temperature': data['main']['temp'],
+        'icon': data['weather'][0]['icon']
+      }));
+      setWeatherData5(forecastData);
     } catch (error) {
-      console.log('Error fetching weather forecast data', error); 
-      
+      console.log('Error fetching weather forecast data', error);
     }
-  }
+  };
 
   return (
     <SafeAreaView>
       <ScrollView>
-        <SearchBar 
+        <SearchBar
           placeholder='Locations (i.e. Paris, Tokyo)'
           onChangeText={setSearchPlace}
           value={searchPlace}
@@ -84,7 +73,7 @@ const HomeScreen = () => {
         <View>
           <Text style={styles.heading1}>Current Weather</Text>
           <View style={styles.container1}>
-            <Image></Image>
+            <Image source={{ uri: imgIcon }} style={{ width: 50, height: 50 }} />
             <Text>{weatherData['temperature']}°F</Text>
             <Text>{weatherData['condition']}</Text>
           </View>
@@ -93,56 +82,28 @@ const HomeScreen = () => {
         <View>
           <Text style={styles.heading1}>Weather Forecast (Next 5 Days)</Text>
           <View style={styles.weatherForecast}>
-            <View style={styles.weatherForecastSub}>
-              <Text>Mon</Text>
-              <View style={styles.tempAndIcon}>
-                <Text>{weatherData5[0]['temperature']}°F</Text>
-                <Image></Image>
-
+            {/* Spread the data into 5 days */}
+            {weatherData5.map((weatherDataSub5, index) => (
+              <View style={styles.weatherForecastSub} key={index}>
+                {/* 1st line is the date */}
+                <Text>Day {index + 1}</Text> 
+                {/* Second line is icon image + temperature */}
+                <View style={styles.tempAndIcon}>
+                  <Text>{weatherDataSub5['temperature']}°F</Text>
+                  <Image source={{ uri: weatherDataSub5['icon'] }} style={{ width: 50, height: 50 }} />
+                </View>
               </View>
-            </View>
-
-            <View style={styles.weatherForecastSub}>
-              <Text>Tue</Text>
-              <View style={styles.tempAndIcon}>
-                <Text>{weatherData5[0]['temperature']}°°F</Text>
-                <Image></Image>
-              </View>
-            </View>
-
-            <View style={styles.weatherForecastSub}>
-              <Text>Wed</Text>
-              <View style={styles.tempAndIcon}>
-                <Text>70°F</Text>
-                <Image></Image>
-              </View>
-            </View>
-
-            <View style={styles.weatherForecastSub}>
-              <Text>Thu</Text>
-              <View style={styles.tempAndIcon}>
-                <Text>70°F</Text>
-                <Image></Image>
-              </View>
-            </View>
-
-            <View style={styles.weatherForecastSub}>
-              <Text>Fri</Text>
-              <View style={styles.tempAndIcon}>
-                <Text>70°F</Text>
-                <Image></Image>
-              </View>
-            </View>
+            ))}
           </View>
         </View>
 
-      </ScrollView>      
+      </ScrollView>
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  container1:{
+  container1: {
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-around',
@@ -176,8 +137,3 @@ const styles = StyleSheet.create({
 });
 
 export default HomeScreen;
-
-
-// Adjust for Mon, Tue
-// Readjust the image section
-// Open the api again
